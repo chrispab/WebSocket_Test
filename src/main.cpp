@@ -59,8 +59,8 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t *payload, size_t length)
     case WStype_TEXT:
         USE_SERIAL.printf("[%u] get Text: %s\n", num, payload);
 
-        // send message to client
-        // webSocket.sendTXT(num, "message here");
+        //send message to client
+        //webSocket.sendTXT(num, "from ESP32 - got your message");
 
         // send data to all connected clients
         // webSocket.broadcastTXT("message here");
