@@ -39,8 +39,10 @@ void hexdump(const void *mem, uint32_t len, uint8_t cols = 16)
     USE_SERIAL.printf("\n");
 }
 
+uint8_t sktNum;
 void webSocketEvent(uint8_t num, WStype_t type, uint8_t *payload, size_t length)
 {
+    sktNum= num;
 
     switch (type)
     {
@@ -78,6 +80,23 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t *payload, size_t length)
     case WStype_FRAGMENT:
     case WStype_FRAGMENT_FIN:
         break;
+    }
+}
+void sendTextViaWS(void)
+{
+    static unsigned long lastResetWatchdogMillis = millis();
+    unsigned long resetWatchdogInterval = 10000;
+
+    if ((millis() - lastResetWatchdogMillis) >= resetWatchdogInterval)
+    {
+
+        //merWrite(timer, 0); // reset timer (feed watchdog)
+        Serial.println("from ESP32 - got your message");
+        //send message to client
+        webSocket.broadcastTXT("from ESP32 - got your message");
+        webSocket.sendTXT(sktNum, "from ESP32 - targeted message");
+
+        lastResetWatchdogMillis = millis();
     }
 }
 
@@ -119,4 +138,7 @@ void loop()
 {
     webSocket.loop();
     heartBeatLED.update(); // initialize
+
+    sendTextViaWS();
+    //send text if it's time to do so
 }
